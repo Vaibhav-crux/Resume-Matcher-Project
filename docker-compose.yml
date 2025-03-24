@@ -1,0 +1,45 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    volumes:
+      - ./resume_analyzer:/app  # Mount Django app directory
+      - ./resume_analyzer/db.sqlite3:/app/db.sqlite3  # Persist SQLite DB
+    ports:
+      - "8000:8000"
+    environment:
+      - AI_API_KEY=${AI_API_KEY}  # Load from .env
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    volumes:
+      - ./streamlit_app:/app  # Mount Streamlit app directory
+    ports:
+      - "8501:8501"
+    environment:
+      - AI_API_KEY=${AI_API_KEY}  # Load from .env
+    depends_on:
+      - django
+    networks:
+      - app-network
+
+  db:
+    image: sqlite:latest  # Placeholder; SQLite doesn't need a separate container, but included for structure
+    volumes:
+      - ./resume_analyzer/db.sqlite3:/data/db.sqlite3  # Persist SQLite DB
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

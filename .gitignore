@@ -1,0 +1,49 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.pdb
+*.log
+
+# Virtual environment
+.venv/
+venv/
+env/
+ENV/
+
+# .env file (for sensitive environment variables)
+.env
+
+# Django specific
+*.db
+*.sqlite3
+*.log
+local_settings.py
+
+# Log folder
+log/
+resume_analyzer/logs/
+
+# Specific files to exclude
+/dir.py
+/directory_structure.txt
+/test.txt
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# IDE specific
+.idea/
+.vscode/
+
+# pyenv
+.python-version
+
+# mypy
+.mypy_cache/
+.dmypy.json
