@@ -1,3 +1,4 @@
+# resume_matcher/views.py
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -13,33 +14,29 @@ import requests
 import json
 import re
 
-# Initialize logger for job posting operations
 logger = logging.getLogger('job_posting')
 
-# Gemini API endpoint
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
 @api_view(['GET'])
 def get_matching_score(request, job_id, candidate_id):
-    """
-    API to fetch or calculate the matching score and summary between a job posting and a resume.
-    If a cached score exists, it is returned; otherwise, it is calculated using Gemini API.
-    """
+    """API to fetch or calculate the matching score and summary between a job posting and a resume."""
     try:
         # Fetch job posting and candidate profile
         job_posting = JobPosting.objects.get(id=job_id)
         candidate_profile = CandidateProfile.objects.get(id=candidate_id)
 
-        # Check if a match score already exists in the database
+        # Check if score already exists in the database
         try:
             match = ResumeMatchScore.objects.get(job_posting=job_posting, candidate_profile=candidate_profile)
             serializer = ResumeMatchScoreSerializer(match)
             logger.info(f"Retrieved cached matching score for job {job_id} and candidate {candidate_id}")
             return Response(serializer.data)
         except ResumeMatchScore.DoesNotExist:
-            pass  # No cached score, proceed with calculation
+            # If no cached score, calculate it
+            pass
 
-        # Prepare data for Gemini API request
+        # Prepare data for Gemini API
         job_data = {
             "title": job_posting.title,
             "company": job_posting.company,
@@ -47,7 +44,7 @@ def get_matching_score(request, job_id, candidate_id):
         }
         resume_data = candidate_profile.structured_data
 
-        # Construct prompt for AI-based scoring and summary generation
+        # Prompt for score and summary
         prompt = (
             f"Calculate a matching score (0-100) between the following job posting and resume. "
             f"Also provide a brief summary (2-3 sentences) explaining how well the resume matches the job criteria, "
@@ -66,7 +63,7 @@ def get_matching_score(request, job_id, candidate_id):
             }]
         }
 
-        # Call Gemini API for score calculation
+        # Call Gemini API
         response = requests.post(
             f"{GEMINI_API_URL}?key={settings.GEMINI_API_KEY}",
             headers=headers,
@@ -83,7 +80,7 @@ def get_matching_score(request, job_id, candidate_id):
         # Remove Markdown code blocks if present
         json_content = re.sub(r'```json\s*|\s*```', '', raw_text).strip()
 
-        # Parse JSON to extract score and summary
+        # Parse the JSON to get score and summary
         result = json.loads(json_content)
         score = float(result['score'])
         summary = result['summary']
@@ -117,9 +114,7 @@ def get_matching_score(request, job_id, candidate_id):
 
 @api_view(['GET'])
 def get_all_matches(request):
-    """
-    API to fetch all matching scores along with job and candidate details.
-    """
+    """API to fetch all matching scores with job and candidate details."""
     try:
         matches = ResumeMatchScore.objects.all()
         serializer = ResumeMatchScoreDetailSerializer(matches, many=True)

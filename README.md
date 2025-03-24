@@ -87,6 +87,10 @@ eduBild/
 ```
 
 ---
+## Demo
+Google Drive Link: `https://drive.google.com/file/d/1TfBuDmxAbm5vnTYFWZ4TX96Yk6FMm-b1/view?usp=drive_link`
+
+---
 
 ## Prerequisites  
 - **Docker**: Install Docker and Docker Compose (included with Docker Desktop on Windows/Mac)  
