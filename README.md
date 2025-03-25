@@ -82,8 +82,6 @@ eduBild/
 │           └── __init__.py
 ├── streamlit_app/            # Streamlit frontend directory
 │   └── app.py                # Main Streamlit script
-└── test/                     # Test directory (optional)
-    └── sqll.py
 ```
 
 ---

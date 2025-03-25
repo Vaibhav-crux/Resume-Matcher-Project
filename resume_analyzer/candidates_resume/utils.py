@@ -68,7 +68,6 @@ def parse_resume_with_gemini(text):
         gemini_response = response.json()
         raw_text = gemini_response['candidates'][0]['content']['parts'][0]['text']
 
-        # Remove Markdown code blocks (e.g., ```json ... ```) if present
         json_content = re.sub(r'```json\s*|\s*```', '', raw_text).strip()
 
         # Parse the cleaned JSON string into a Python dictionary
